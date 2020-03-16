@@ -40,8 +40,8 @@ body {
 .play_pool {
   display: -ms-grid;
   display: grid;
-  -ms-grid-rows: (50px)[10];
-      grid-template-rows: repeat(10, 50px);
+  -ms-grid-rows: (50px)[5];
+      grid-template-rows: repeat(5, 50px);
   -ms-grid-columns: (50px)[10];
       grid-template-columns: repeat(10, 50px);
   -webkit-box-pack: center;
