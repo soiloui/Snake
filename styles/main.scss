@@ -1,0 +1,51 @@
+@import 'config';
+@import 'responsive';
+
+body{
+    display: grid;
+    justify-content: center;
+}
+
+.header{
+    display: grid;
+    justify-content: center;
+
+    margin-bottom: 1rem;
+
+    &--title{
+        font-size: 4rem;
+    }
+    &--score{
+        padding: .3rem;
+
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        font-family: 'Roboto Mono', monospace;
+
+        border: 1px solid #000;
+        border-radius: .3rem;
+    }
+}
+
+.play_pool{
+    display: grid;
+    grid-template-rows: repeat(10, 50px);
+    grid-template-columns: repeat(10, 50px);
+    justify-content: center;
+
+    border: 1px solid #000;
+
+    &--pools{
+        background: #ddd;
+    }
+    &--player{
+        background: #000;
+    }
+    &--food{
+        background: #f3c;
+    }
+
+    &>:nth-child(n){
+        border: 1px solid #000;
+    }
+}
