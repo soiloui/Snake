@@ -61,6 +61,7 @@ body {
 
 .play_pool--tail {
   background: #222;
+  z-index: 1;
 }
 
 .play_pool--food {

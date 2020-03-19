@@ -18,9 +18,8 @@ let TAILS = [];
 let gameStatus = 0;
 let acceleration = 5;
 let speed = 1000;
-let direction = 'none';
-let prevDirection = 'none';
-
+let direction = "none";
+let prevDirection = "none";
 
 function GameStart() {
     boardCreate();
@@ -72,42 +71,40 @@ function foodCreate(player_position) {
 }
 
 function directionCalculate(e) {
-    if (e.keyCode == 37 && prevDirection != 'right') {
-        direction = 'left';
-    } else if (e.keyCode == 38 && prevDirection != 'down') {
-        direction = 'up';
-    } else if (e.keyCode == 39 && prevDirection != 'left') {
-        direction = 'right';
-    } else if (e.keyCode == 40 && prevDirection != 'up') {
-        direction = 'down';
+    if (e.keyCode == 37 && prevDirection != "right") {
+        direction = "left";
+    } else if (e.keyCode == 38 && prevDirection != "down") {
+        direction = "up";
+    } else if (e.keyCode == 39 && prevDirection != "left") {
+        direction = "right";
+    } else if (e.keyCode == 40 && prevDirection != "up") {
+        direction = "down";
     }
 
-    if (gameStatus == 0){
+    if (gameStatus == 0) {
         moveFunction();
     }
 }
 
 function moveFunction() {
-    if (gameStatus == 0){
-        move = setInterval(function(){moveFunction()}, speed/acceleration);
+    if (gameStatus == 0) {
+        move = setInterval(function() {
+            moveFunction();
+        }, speed / acceleration);
         gameStatus = 1;
     }
 
     prevDirection = direction;
 
     let playerRowStartNumber = parseInt(
-        getComputedStyle(player)
-        .getPropertyValue("grid-row-start")
+        getComputedStyle(player).getPropertyValue("grid-row-start")
     );
     let playerColumnStartNumber = parseInt(
-        getComputedStyle(player)
-        .getPropertyValue("grid-column-start")
+        getComputedStyle(player).getPropertyValue("grid-column-start")
     );
-
 
     foodCollision(playerRowStartNumber, playerColumnStartNumber);
     tailMove(playerRowStartNumber, playerColumnStartNumber);
-
 
     if (direction == "left") {
         if (playerColumnStartNumber - 1 != 0) {
@@ -135,31 +132,57 @@ function moveFunction() {
 }
 
 function tailMove(pRow, pCol) {
-    if (TAILS.length>0){
+    if (TAILS.length > 0) {
+        let tail_POSITION = [];
+
         TAILS.forEach((element, index) => {
-            if (index == 0){
-                element.style.gridRowStart = pRow;
-                element.style.gridColumnStart = pCol;
+            if (index != 0){
+                tail_POSITION.push(
+                    parseInt(
+                        getComputedStyle(TAILS[index - 1]).getPropertyValue(
+                            "grid-row-start"
+                        )
+                    ) +
+                        "" +
+                        parseInt(
+                            getComputedStyle(TAILS[index - 1]).getPropertyValue(
+                                "grid-column-start"
+                            )
+                        )
+                );
             }
         });
+
+        TAILS.forEach((element, index) => {
+            if (index == 0) {
+                element.style.gridRowStart = pRow;
+                element.style.gridColumnStart = pCol;
+            } else if (index > 0) {
+                element.style.gridRowStart = parseInt(
+                    tail_POSITION[index - 1].substring(0, 1)
+                );
+                element.style.gridColumnStart = parseInt(
+                    tail_POSITION[index - 1].substring(1, 2)
+                );
+            }
+        });
+        console.log(tail_POSITION);
     }
 }
 
-function foodCollision(pRow, pCol){
+function foodCollision(pRow, pCol) {
     let foodColumnStartNumber = parseInt(
-        getComputedStyle(food)
-        .getPropertyValue("grid-column-start")
+        getComputedStyle(food).getPropertyValue("grid-column-start")
     );
     let foodRowStartNumber = parseInt(
-        getComputedStyle(food)
-        .getPropertyValue("grid-row-start")
+        getComputedStyle(food).getPropertyValue("grid-row-start")
     );
 
-    if (pCol == foodColumnStartNumber
-        && pRow == foodRowStartNumber){
-
+    if (pCol == foodColumnStartNumber && pRow == foodRowStartNumber) {
         clearInterval(move);
-        move = setInterval(function(){moveFunction()}, speed/acceleration);
+        move = setInterval(function() {
+            moveFunction();
+        }, speed / acceleration);
         acceleration += 0.5;
         PLAY_POOL.removeChild(food);
 
@@ -168,29 +191,30 @@ function foodCollision(pRow, pCol){
         PLAY_POOL.appendChild(tail);
         TAILS.push(tail);
 
-
-        if (TAILS.length > 1){
+        if (TAILS.length > 1) {
             TAILS.forEach((element, index) => {
-                if (index + 1 == TAILS.length){
-                    console.log(TAILS[index-1]);
+                if (index + 1 == TAILS.length) {
                     tail.style.gridRowStart = parseInt(
-                    getComputedStyle(TAILS[index-1])
-                    .getPropertyValue('grid-row-start'));
+                        getComputedStyle(TAILS[index - 1]).getPropertyValue(
+                            "grid-row-start"
+                        )
+                    );
 
                     tail.style.gridColumnStart = parseInt(
-                    getComputedStyle(TAILS[index-1])
-                    .getPropertyValue('grid-column-start'));
+                        getComputedStyle(TAILS[index - 1]).getPropertyValue(
+                            "grid-column-start"
+                        )
+                    );
                 }
             });
-        }
-        else{
+        } else {
             tail.style.gridRowStart = foodRowStartNumber;
             tail.style.gridColumnStart = foodColumnStartNumber;
         }
 
         console.log(TAILS);
         foodCreate();
-        }
+    }
 }
 
 function breakGame() {
@@ -198,13 +222,16 @@ function breakGame() {
 
     PLAY_POOL.removeChild(player);
     PLAY_POOL.removeChild(food);
-    if (TAILS.length>0){
-    PLAY_POOL.removeChild(tail);}
+    if (TAILS.length > 0) {
+        TAILS.forEach((element, index) => {
+            PLAY_POOL.removeChild(TAILS[index]);
+        });
+    }
 
     TAILS = [];
 
     gameStatus = 0;
-    direction = 'none';
+    direction = "none";
     acceleration = 5;
     speed = 1000;
 
