@@ -40,10 +40,10 @@ body {
 .play_pool {
   display: -ms-grid;
   display: grid;
-  -ms-grid-rows: (50px)[5];
-      grid-template-rows: repeat(5, 50px);
-  -ms-grid-columns: (50px)[10];
-      grid-template-columns: repeat(10, 50px);
+  -ms-grid-rows: (50px)[7];
+      grid-template-rows: repeat(7, 50px);
+  -ms-grid-columns: (50px)[7];
+      grid-template-columns: repeat(7, 50px);
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
@@ -56,6 +56,7 @@ body {
 
 .play_pool--player {
   background: #000;
+  z-index: 2;
 }
 
 .play_pool--food {
