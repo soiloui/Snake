@@ -9,14 +9,17 @@ const columns_amount = getComputedStyle(PLAY_POOL)
     .getPropertyValue("grid-template-columns")
     .split(" ").length;
 const total_amount = rows_amount * columns_amount;
-const player = document.createElement("div");
-const food = document.createElement("div");
 
+const player = document.createElement("div");
+player.classList.add("play_pool--player");
+const food = document.createElement("div");
+let TAILS = [];
 
 let gameStatus = 0;
 let acceleration = 5;
 let speed = 1000;
-let direction = 'up';
+let direction = 'none';
+let prevDirection = 'none';
 
 
 function GameStart() {
@@ -24,7 +27,6 @@ function GameStart() {
 
     let player_position = Math.floor(Math.random() * total_amount);
 
-    player.classList.add("play_pool--player");
     gridAreaSet(player, player_position);
     PLAY_POOL.appendChild(player);
 
@@ -70,13 +72,13 @@ function foodCreate(player_position) {
 }
 
 function directionCalculate(e) {
-    if (e.keyCode == 37) {
+    if (e.keyCode == 37 && prevDirection != 'right') {
         direction = 'left';
-    } else if (e.keyCode == 38) {
+    } else if (e.keyCode == 38 && prevDirection != 'down') {
         direction = 'up';
-    } else if (e.keyCode == 39) {
+    } else if (e.keyCode == 39 && prevDirection != 'left') {
         direction = 'right';
-    } else if (e.keyCode == 40) {
+    } else if (e.keyCode == 40 && prevDirection != 'up') {
         direction = 'down';
     }
 
@@ -91,16 +93,21 @@ function moveFunction() {
         gameStatus = 1;
     }
 
-    let playerColumnStartNumber = parseInt(
-        getComputedStyle(player)
-        .getPropertyValue("grid-column-start")
-    );
+    prevDirection = direction;
+
     let playerRowStartNumber = parseInt(
         getComputedStyle(player)
         .getPropertyValue("grid-row-start")
     );
+    let playerColumnStartNumber = parseInt(
+        getComputedStyle(player)
+        .getPropertyValue("grid-column-start")
+    );
+
 
     foodCollision(playerRowStartNumber, playerColumnStartNumber);
+    tailMove(playerRowStartNumber, playerColumnStartNumber);
+
 
     if (direction == "left") {
         if (playerColumnStartNumber - 1 != 0) {
@@ -127,6 +134,17 @@ function moveFunction() {
     }
 }
 
+function tailMove(pRow, pCol) {
+    if (TAILS.length>0){
+        TAILS.forEach((element, index) => {
+            if (index == 0){
+                element.style.gridRowStart = pRow;
+                element.style.gridColumnStart = pCol;
+            }
+        });
+    }
+}
+
 function foodCollision(pRow, pCol){
     let foodColumnStartNumber = parseInt(
         getComputedStyle(food)
@@ -139,18 +157,57 @@ function foodCollision(pRow, pCol){
 
     if (pCol == foodColumnStartNumber
         && pRow == foodRowStartNumber){
-            acceleration += 0.5;
-            PLAY_POOL.removeChild(food);
-            foodCreate();
+
+        clearInterval(move);
+        move = setInterval(function(){moveFunction()}, speed/acceleration);
+        acceleration += 0.5;
+        PLAY_POOL.removeChild(food);
+
+        let tail = document.createElement("div");
+        tail.classList.add("play_pool--tail");
+        PLAY_POOL.appendChild(tail);
+        TAILS.push(tail);
+
+
+        if (TAILS.length > 1){
+            TAILS.forEach((element, index) => {
+                if (index + 1 == TAILS.length){
+                    console.log(TAILS[index-1]);
+                    tail.style.gridRowStart = parseInt(
+                    getComputedStyle(TAILS[index-1])
+                    .getPropertyValue('grid-row-start'));
+
+                    tail.style.gridColumnStart = parseInt(
+                    getComputedStyle(TAILS[index-1])
+                    .getPropertyValue('grid-column-start'));
+                }
+            });
+        }
+        else{
+            tail.style.gridRowStart = foodRowStartNumber;
+            tail.style.gridColumnStart = foodColumnStartNumber;
+        }
+
+        console.log(TAILS);
+        foodCreate();
         }
 }
 
 function breakGame() {
     clearInterval(move);
+
     PLAY_POOL.removeChild(player);
     PLAY_POOL.removeChild(food);
+    if (TAILS.length>0){
+    PLAY_POOL.removeChild(tail);}
+
+    TAILS = [];
+
     gameStatus = 0;
+    direction = 'none';
     acceleration = 5;
+    speed = 1000;
+
     GameStart();
 }
 

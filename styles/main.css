@@ -59,6 +59,10 @@ body {
   z-index: 2;
 }
 
+.play_pool--tail {
+  background: #222;
+}
+
 .play_pool--food {
   background: #f3c;
 }
