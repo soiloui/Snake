@@ -18,6 +18,10 @@ body {
 .header {
   display: -ms-grid;
   display: grid;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
@@ -26,6 +30,7 @@ body {
 
 .header--title {
   font-size: 4rem;
+  text-align: center;
 }
 
 .header--score {
@@ -52,24 +57,94 @@ body {
 
 .play_pool--pools {
   background: #ddd;
+  border: 1px solid #000;
 }
 
 .play_pool--player {
-  background: #000;
+  background: #111;
   z-index: 3;
+  -webkit-transition: all .1s ease-in-out;
+  transition: all .1s ease-in-out;
+  margin: 5%;
 }
 
 .play_pool--tail {
   background: #222;
   z-index: 1;
+  margin: 5%;
 }
 
 .play_pool--food {
   background: #f3c;
   z-index: 2;
+  border-radius: 50%;
+  margin: 25%;
+  -webkit-box-shadow: 0px 0px 12px 2px #f3f;
+          box-shadow: 0px 0px 12px 2px #f3f;
+  -webkit-animation-name: foodPulse;
+          animation-name: foodPulse;
+  -webkit-animation-duration: 3s;
+          animation-duration: 3s;
+  -webkit-animation-delay: .5s;
+          animation-delay: .5s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
 }
 
-.play_pool > :nth-child(n) {
-  border: 1px solid #000;
+@-webkit-keyframes foodPulse {
+  from {
+    margin: 25%;
+  }
+  50% {
+    margin: 15%;
+  }
+  to {
+    margin: 25%;
+  }
+}
+
+@keyframes foodPulse {
+  from {
+    margin: 25%;
+  }
+  50% {
+    margin: 15%;
+  }
+  to {
+    margin: 25%;
+  }
+}
+
+.play_pool--score {
+  font-size: 1.2rem;
+  z-index: 4;
+  border-radius: 10%;
+  margin: 10%;
+  background: #fff;
+  -webkit-transition: all .5s ease-in-out;
+  transition: all .5s ease-in-out;
+}
+
+.settings__form {
+  margin: 1rem 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.settings__form--label {
+  text-transform: uppercase;
+}
+
+.settings__form--range {
+  margin-bottom: .5rem;
+}
+
+.settings__form--reset {
+  margin-top: .5rem;
 }
 /*# sourceMappingURL=main.css.map */

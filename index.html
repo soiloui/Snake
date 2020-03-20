@@ -10,11 +10,25 @@
     <header class="header">
         <h1 class="header--title">Snake</h1>
         <span class="header--score" id="score">Score: </span>
+
+
     </header>
 
     <main class="play_pool" id="pool">
 
     </main>
+
+    <section class="settings">
+        <form class="settings__form">
+            <label for="points" class="settings__form--label">Speed:</label>
+            <input type="range" id="points" name="speed" min="1" max="10" value="5" class="settings__form--range">
+
+            <label for="points" class="settings__form--label">Area of play:</label>
+            <input type="range" id="points" name="points" min="2" max="22" value="10" class="settings__form--range">
+
+            <input type="reset" class="settings__form--reset">
+        </form>
+    </section>
 
     <script src="script.js"></script>
 </body>

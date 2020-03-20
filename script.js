@@ -1,6 +1,6 @@
 `use strict`;
 const PLAY_POOL = document.querySelector("#pool");
-const SCORE = document.querySelector("#score");
+const SCORE_div = document.querySelector("#score");
 
 const rows_amount = getComputedStyle(PLAY_POOL)
     .getPropertyValue("grid-template-rows")
@@ -14,13 +14,14 @@ const player = document.createElement("div");
 player.classList.add("play_pool--player");
 const food = document.createElement("div");
 food.classList.add("play_pool--food");
+
 let TAILS = [];
 
 let gameStatus = 0;
-let baseAcceleration = .2;
-let acceleration = 1;
+let score = 0;
+let baseAcceleration = 1;
+let acceleration = .1;
 let baseSpeed = 300;
-let speed = baseSpeed;
 let direction = "none";
 let prevDirection = "none";
 
@@ -34,7 +35,6 @@ function GameStart() {
 
     foodCreate(player_position);
 }
-
 function boardCreate() {
     for (let i = 1; i <= total_amount; i++) {
         const POOLS_div = document.createElement("div");
@@ -59,7 +59,6 @@ function gridAreaSet(element, position) {
 
     element.style.gridArea = `${row} / ${col}`;
 }
-
 function directionCalculate(e) {
     if (e.keyCode == 37 && prevDirection != "right") {
         direction = "left";
@@ -98,11 +97,14 @@ function moveFunction() {
     foodCollision(pRow, pCol);
     tailCollision();
 }
-
 function wallCollision(pRow, pCol){
     if (direction == "left") {
         if (pCol - 1 != 0) {
             player.style.gridColumnStart = pCol - 1;
+
+            player.style.borderRadius = 0;
+            player.style.borderBottomLeftRadius = '50%';
+            player.style.borderTopLeftRadius = '50%';
         }
         else breakGame();
     }
@@ -110,6 +112,10 @@ function wallCollision(pRow, pCol){
     if (direction == "up") {
         if (pRow - 1 != 0) {
             player.style.gridRowStart = pRow - 1;
+
+            player.style.borderRadius = 0;
+            player.style.borderTopLeftRadius = '50%';
+            player.style.borderTopRightRadius = '50%';
         }
         else breakGame();
     }
@@ -117,6 +123,10 @@ function wallCollision(pRow, pCol){
     if (direction == "right") {
         if (pCol + 1 != columns_amount + 1) {
             player.style.gridColumnStart = pCol + 1;
+
+            player.style.borderRadius = 0;
+            player.style.borderBottomRightRadius = '50%';
+            player.style.borderTopRightRadius = '50%';
         }
         else breakGame();
     }
@@ -124,11 +134,14 @@ function wallCollision(pRow, pCol){
     if (direction == "down") {
         if (pRow + 1 != rows_amount + 1) {
             player.style.gridRowStart = pRow + 1;
+
+            player.style.borderRadius = 0;
+            player.style.borderBottomLeftRadius = '50%';
+            player.style.borderBottomRightRadius = '50%';
         }
         else breakGame();
     }
 }
-
 function tailCollision(){
     let pRow = parseInt(getComputedStyle(player).getPropertyValue("grid-row-start"));
     let pCol = parseInt(getComputedStyle(player).getPropertyValue("grid-column-start"));
@@ -142,7 +155,6 @@ function tailCollision(){
         }
     }
 }
-
 function tailMove(pRow, pCol) {
     if (TAILS.length > 0) {
         let tail_POSITION = [];
@@ -180,53 +192,55 @@ function tailMove(pRow, pCol) {
         });
     }
 }
+function tailCreate(fRow, fCol){
+    let tail = document.createElement("div");
+    tail.classList.add("play_pool--tail");
+    PLAY_POOL.appendChild(tail);
+    TAILS.push(tail);
 
+    if (TAILS.length > 1) {
+        TAILS.forEach((element, index) => {
+            if (index + 1 == TAILS.length) {
+                tail.style.gridRowStart = parseInt(
+                    getComputedStyle(TAILS[index - 1]).getPropertyValue(
+                        "grid-row-start"
+                    )
+                );
+
+                tail.style.gridColumnStart = parseInt(
+                    getComputedStyle(TAILS[index - 1]).getPropertyValue(
+                        "grid-column-start"
+                    )
+                );
+            }
+        });
+    } else {
+        tail.style.gridRowStart = fRow;
+        tail.style.gridColumnStart = fCol;
+    }
+}
 function foodCollision(pRow, pCol) {
-    let foodColumnStartNumber = parseInt(
+    let fCol = parseInt(
         getComputedStyle(food).getPropertyValue("grid-column-start")
     );
-    let foodRowStartNumber = parseInt(
+    let fRow = parseInt(
         getComputedStyle(food).getPropertyValue("grid-row-start")
     );
 
-    if (pCol == foodColumnStartNumber && pRow == foodRowStartNumber) {
+    if (pCol == fCol && pRow == fRow) {
         clearInterval(move);
+
         move = setInterval(function() {
             moveFunction();
-        }, speed / acceleration);
-        acceleration += baseAcceleration;
+        }, (baseSpeed / (baseAcceleration + TAILS.length*acceleration)));
+
         PLAY_POOL.removeChild(food);
 
-        let tail = document.createElement("div");
-        tail.classList.add("play_pool--tail");
-        PLAY_POOL.appendChild(tail);
-        TAILS.push(tail);
-
-        if (TAILS.length > 1) {
-            TAILS.forEach((element, index) => {
-                if (index + 1 == TAILS.length) {
-                    tail.style.gridRowStart = parseInt(
-                        getComputedStyle(TAILS[index - 1]).getPropertyValue(
-                            "grid-row-start"
-                        )
-                    );
-
-                    tail.style.gridColumnStart = parseInt(
-                        getComputedStyle(TAILS[index - 1]).getPropertyValue(
-                            "grid-column-start"
-                        )
-                    );
-                }
-            });
-        } else {
-            tail.style.gridRowStart = foodRowStartNumber;
-            tail.style.gridColumnStart = foodColumnStartNumber;
-        }
-
+        scoreCount(fRow, fCol);
+        tailCreate(fRow, fCol);
         foodCreate();
     }
 }
-
 function foodCreate(player_position) {
     let food_position = Math.floor(Math.random() * total_amount);
 
@@ -278,6 +292,25 @@ function foodCreate(player_position) {
 
 }
 
+function scoreCount(fRow, fCol) {
+    score += 10 + TAILS.length;
+    SCORE_div.innerText = `SCORE: ${score}`;
+
+    const SCORE_EFFECT_span = document.createElement('span');
+    SCORE_EFFECT_span.classList.add('play_pool--score');
+
+    SCORE_EFFECT_span.innerText = `+ ${10 + TAILS.length}`;
+
+    SCORE_EFFECT_span.style.gridRowStart = fRow;
+    SCORE_EFFECT_span.style.gridColumnStart = fCol;
+    SCORE_EFFECT_span.style.opacity = 1;
+
+    PLAY_POOL.appendChild(SCORE_EFFECT_span);
+    setTimeout(function() {SCORE_EFFECT_span.style.opacity = 0;}, 500);
+    setTimeout(function() {SCORE_EFFECT_span.remove();}, 1000);
+
+}
+
 function breakGame() {
     clearInterval(move);
 
@@ -292,8 +325,9 @@ function breakGame() {
     TAILS = [];
 
     gameStatus = 0;
+    score = 0;
+    SCORE_div.innerText = `SCORE:`;
     direction = "none";
-    acceleration = 1;
     speed = baseSpeed;
 
     GameStart();

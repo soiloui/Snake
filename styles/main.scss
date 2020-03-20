@@ -8,12 +8,14 @@ body{
 
 .header{
     display: grid;
+    flex-direction: column;
     justify-content: center;
 
     margin-bottom: 1rem;
 
     &--title{
         font-size: 4rem;
+        text-align: center;
     }
     &--score{
         padding: .3rem;
@@ -37,21 +39,60 @@ body{
 
     &--pools{
         background: #ddd;
+        border: 1px solid #000;
     }
     &--player{
-        background: #000;
+        background: #111;
         z-index: 3;
+        transition: all .1s ease-in-out;
+        margin: 5%;
     }
     &--tail{
         background: #222;
         z-index: 1;
+        margin: 5%;
     }
     &--food{
         background: #f3c;
         z-index: 2;
-    }
+        border-radius: 50%;
+        margin: 25%;
+        box-shadow: 0px 0px 12px 2px #f3f;
 
-    &>:nth-child(n){
-        border: 1px solid #000;
+        animation-name: foodPulse;
+        animation-duration: 3s;
+        animation-delay: .5s;
+        animation-iteration-count: infinite;
+    }
+    @keyframes foodPulse{
+        from {margin: 25%;}
+        50% {margin: 15%;}
+        to {margin: 25%;}
+    }
+    &--score{
+        font-size: 1.2rem;
+        z-index: 4;
+        border-radius: 10%;
+        margin: 10%;
+        background: #fff;
+        transition: all .5s ease-in-out;
+    }
+}
+
+.settings{
+    &__form{
+        margin: 1rem 0;
+        display: flex;
+        flex-direction: column;
+
+        &--label{
+            text-transform: uppercase;
+        }
+        &--range{
+            margin-bottom: .5rem;
+        }
+        &--reset{
+            margin-top: .5rem;
+        }
     }
 }
