@@ -157,23 +157,22 @@ function tailCollision(){
 }
 function tailMove(pRow, pCol) {
     if (TAILS.length > 0) {
-        let tail_POSITION = [];
+        let row_POSITION = [];
+        let col_POSITION = [];
 
         TAILS.forEach((element, index) => {
             if (index != 0){
-                tail_POSITION.push(
+                row_POSITION.push(
                     parseInt(
-                        getComputedStyle(TAILS[index - 1]).getPropertyValue(
-                            "grid-row-start"
-                        )
-                    ) +
-                        "" +
-                        parseInt(
-                            getComputedStyle(TAILS[index - 1]).getPropertyValue(
-                                "grid-column-start"
-                            )
-                        )
-                );
+                    getComputedStyle(TAILS[index - 1])
+                    .getPropertyValue("grid-row-start")
+                    ));
+
+                col_POSITION.push(
+                    parseInt(
+                    getComputedStyle(TAILS[index - 1])
+                    .getPropertyValue("grid-column-start")
+                    ));
             }
         });
 
@@ -183,10 +182,10 @@ function tailMove(pRow, pCol) {
                 element.style.gridColumnStart = pCol;
             } else if (index > 0) {
                 element.style.gridRowStart = parseInt(
-                    tail_POSITION[index - 1].substring(0, 1)
+                    row_POSITION[index - 1]
                 );
                 element.style.gridColumnStart = parseInt(
-                    tail_POSITION[index - 1].substring(1, 2)
+                    col_POSITION[index - 1]
                 );
             }
         });

@@ -45,10 +45,10 @@ body {
 .play_pool {
   display: -ms-grid;
   display: grid;
-  -ms-grid-rows: (50px)[8];
-      grid-template-rows: repeat(8, 50px);
-  -ms-grid-columns: (50px)[8];
-      grid-template-columns: repeat(8, 50px);
+  -ms-grid-rows: (35px)[12];
+      grid-template-rows: repeat(12, 35px);
+  -ms-grid-columns: (35px)[12];
+      grid-template-columns: repeat(12, 35px);
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
@@ -123,6 +123,8 @@ body {
   background: #fff;
   -webkit-transition: all .5s ease-in-out;
   transition: all .5s ease-in-out;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .settings__form {
