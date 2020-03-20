@@ -45,10 +45,10 @@ body {
 .play_pool {
   display: -ms-grid;
   display: grid;
-  -ms-grid-rows: (35px)[12];
-      grid-template-rows: repeat(12, 35px);
-  -ms-grid-columns: (35px)[12];
-      grid-template-columns: repeat(12, 35px);
+  -ms-grid-rows: (35px)[10];
+      grid-template-rows: repeat(10, 35px);
+  -ms-grid-columns: (35px)[10];
+      grid-template-columns: repeat(10, 35px);
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;

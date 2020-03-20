@@ -1,14 +1,18 @@
 `use strict`;
 const PLAY_POOL = document.querySelector("#pool");
 const SCORE_div = document.querySelector("#score");
+const SPEED_input = document.querySelector('#speed');
+const SIZE_input = document.querySelector('#size');
 
-const rows_amount = getComputedStyle(PLAY_POOL)
+
+let rows_amount = getComputedStyle(PLAY_POOL)
     .getPropertyValue("grid-template-rows")
     .split(" ").length;
-const columns_amount = getComputedStyle(PLAY_POOL)
+let columns_amount = getComputedStyle(PLAY_POOL)
     .getPropertyValue("grid-template-columns")
     .split(" ").length;
-const total_amount = rows_amount * columns_amount;
+let total_amount = rows_amount * columns_amount;
+
 
 const player = document.createElement("div");
 player.classList.add("play_pool--player");
@@ -16,6 +20,7 @@ const food = document.createElement("div");
 food.classList.add("play_pool--food");
 
 let TAILS = [];
+let intervals = [];
 
 let gameStatus = 0;
 let score = 0;
@@ -24,6 +29,8 @@ let acceleration = .1;
 let baseSpeed = 300;
 let direction = "none";
 let prevDirection = "none";
+
+
 
 function GameStart() {
     boardCreate();
@@ -70,27 +77,24 @@ function directionCalculate(e) {
         direction = "down";
     }
 
-    if (gameStatus == 0) {
-        moveFunction();
+    if (gameStatus == 0 && intervals.length == 0) {
+        let move = setInterval(function() {
+            moveFunction();
+        }, baseSpeed);
+        intervals[0] = move;
+        gameStatus = 1;
     }
 }
 
 function moveFunction() {
-    if (gameStatus == 0) {
-        move = setInterval(function() {
-            moveFunction();
-        }, baseSpeed);
-        gameStatus = 1;
-    }
-
-    prevDirection = direction;
-
     let pRow = parseInt(
         getComputedStyle(player).getPropertyValue("grid-row-start")
     );
     let pCol = parseInt(
         getComputedStyle(player).getPropertyValue("grid-column-start")
     );
+
+    prevDirection = direction;
 
     tailMove(pRow, pCol);
     wallCollision(pRow, pCol);
@@ -121,7 +125,7 @@ function wallCollision(pRow, pCol){
     }
 
     if (direction == "right") {
-        if (pCol + 1 != columns_amount + 1) {
+        if (pCol + 1 != parseInt(columns_amount) + 1) {
             player.style.gridColumnStart = pCol + 1;
 
             player.style.borderRadius = 0;
@@ -132,7 +136,7 @@ function wallCollision(pRow, pCol){
     }
 
     if (direction == "down") {
-        if (pRow + 1 != rows_amount + 1) {
+        if (pRow + 1 != parseInt(rows_amount) + 1) {
             player.style.gridRowStart = pRow + 1;
 
             player.style.borderRadius = 0;
@@ -140,6 +144,10 @@ function wallCollision(pRow, pCol){
             player.style.borderBottomRightRadius = '50%';
         }
         else breakGame();
+    }
+
+    if (direction == 'none'){
+        breakGame();
     }
 }
 function tailCollision(){
@@ -227,11 +235,14 @@ function foodCollision(pRow, pCol) {
     );
 
     if (pCol == fCol && pRow == fRow) {
-        clearInterval(move);
 
-        move = setInterval(function() {
+        clearInterval(intervals[0]);
+
+        let move = setInterval(function() {
             moveFunction();
         }, (baseSpeed / (baseAcceleration + TAILS.length*acceleration)));
+
+        intervals[0] = move;
 
         PLAY_POOL.removeChild(food);
 
@@ -310,16 +321,30 @@ function scoreCount(fRow, fCol) {
 
 }
 
-function breakGame() {
-    clearInterval(move);
+function speedChange() {
+    baseSpeed = 1500/SPEED_input.value;
+    SPEED_input.previousElementSibling.innerText = `Base speed: ${SPEED_input.value}`;
+}
+function sizeChange() {
+    let amount = SIZE_input.value
+    SIZE_input.previousElementSibling.innerText = `AREA OF PLAY: ${amount}`;
 
-    PLAY_POOL.removeChild(player);
-    PLAY_POOL.removeChild(food);
-    if (TAILS.length > 0) {
-        TAILS.forEach((element, index) => {
-            PLAY_POOL.removeChild(TAILS[index]);
-        });
-    }
+    PLAY_POOL.style.gridTemplateRows = `repeat(${amount}, 35px)`;
+    PLAY_POOL.style.gridTemplateColumns = `repeat(${amount}, 35px)`;
+
+    rows_amount = amount;
+    columns_amount = amount;
+    total_amount = rows_amount*columns_amount;
+    breakGame();
+}
+
+function breakGame() {
+    intervals.forEach(element => {
+        clearInterval(element);
+    });
+    intervals = [];
+
+    PLAY_POOL.innerHTML = '';
 
     TAILS = [];
 
@@ -335,3 +360,5 @@ function breakGame() {
 GameStart();
 
 window.addEventListener("keydown", directionCalculate);
+SPEED_input.addEventListener("change", speedChange);
+SIZE_input.addEventListener("change", sizeChange);
