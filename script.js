@@ -1,8 +1,11 @@
 `use strict`;
+const body = document.querySelector('body');
 const PLAY_POOL = document.querySelector("#pool");
 const SCORE_div = document.querySelector("#score");
 const SPEED_input = document.querySelector('#speed');
 const SIZE_input = document.querySelector('#size');
+const ACCELERATION_input = document.querySelector('#acceleration');
+const RESET_SETT_input = document.querySelector('#reset_settings');
 
 
 let rows_amount = getComputedStyle(PLAY_POOL)
@@ -303,13 +306,15 @@ function foodCreate(player_position) {
 }
 
 function scoreCount(fRow, fCol) {
-    score += 10 + TAILS.length;
+    let addScore = 10 + TAILS.length + acceleration*100
+
+    score += addScore;
     SCORE_div.innerText = `SCORE: ${score}`;
 
     const SCORE_EFFECT_span = document.createElement('span');
     SCORE_EFFECT_span.classList.add('play_pool--score');
 
-    SCORE_EFFECT_span.innerText = `+ ${10 + TAILS.length}`;
+    SCORE_EFFECT_span.innerText = `+${addScore}`;
 
     SCORE_EFFECT_span.style.gridRowStart = fRow;
     SCORE_EFFECT_span.style.gridColumnStart = fCol;
@@ -325,6 +330,10 @@ function speedChange() {
     baseSpeed = 1500/SPEED_input.value;
     SPEED_input.previousElementSibling.innerText = `Base speed: ${SPEED_input.value}`;
 }
+function accelerationChange() {
+    acceleration = ACCELERATION_input.value;
+    ACCELERATION_input.previousElementSibling.innerText = `Acceleration: ${ACCELERATION_input.value}`;
+}
 function sizeChange() {
     let amount = SIZE_input.value
     SIZE_input.previousElementSibling.innerText = `AREA OF PLAY: ${amount}`;
@@ -336,6 +345,19 @@ function sizeChange() {
     columns_amount = amount;
     total_amount = rows_amount*columns_amount;
     breakGame();
+}
+function resetSettings() {
+    speedChange();
+    accelerationChange();
+    sizeChange();
+}
+
+function blockScroll(e){
+    if (e.target != PLAY_POOL && e.target.parentNode != PLAY_POOL){
+        body.style.overflow = 'auto';
+    } else {
+        body.style.overflow = 'hidden';
+    }
 }
 
 function breakGame() {
@@ -352,7 +374,6 @@ function breakGame() {
     score = 0;
     SCORE_div.innerText = `SCORE:`;
     direction = "none";
-    speed = baseSpeed;
 
     GameStart();
 }
@@ -360,5 +381,10 @@ function breakGame() {
 GameStart();
 
 window.addEventListener("keydown", directionCalculate);
+
 SPEED_input.addEventListener("change", speedChange);
 SIZE_input.addEventListener("change", sizeChange);
+ACCELERATION_input.addEventListener("change", accelerationChange);
+RESET_SETT_input.addEventListener("click", function(){setTimeout(resetSettings)}, 15);
+
+document.addEventListener("click", blockScroll);

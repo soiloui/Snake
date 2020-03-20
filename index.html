@@ -23,10 +23,13 @@
             <label for="speed" class="settings__form--label">Base speed: 5</label>
             <input type="range" id="speed" name="speed" min="1" max="10" value="5" class="settings__form--range">
 
+            <label for="acceleration" class="settings__form--label">acceleration: 0.1</label>
+            <input type="range" id="acceleration" name="acceleration" min="0.01" max="0.99" value="0.1" step="0.01" class="settings__form--range">
+
             <label for="size" class="settings__form--label">Area of play: 10</label>
             <input type="range" id="size" name="size" min="2" max="22" value="10" class="settings__form--range">
 
-            <input type="reset" class="settings__form--reset">
+            <input type="reset" id="reset_settings" class="settings__form--reset">
         </form>
     </section>
 
