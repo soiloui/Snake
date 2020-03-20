@@ -13,11 +13,14 @@ const total_amount = rows_amount * columns_amount;
 const player = document.createElement("div");
 player.classList.add("play_pool--player");
 const food = document.createElement("div");
+food.classList.add("play_pool--food");
 let TAILS = [];
 
 let gameStatus = 0;
-let acceleration = 5;
-let speed = 1000;
+let baseAcceleration = .2;
+let acceleration = 1;
+let baseSpeed = 300;
+let speed = baseSpeed;
 let direction = "none";
 let prevDirection = "none";
 
@@ -32,6 +35,17 @@ function GameStart() {
     foodCreate(player_position);
 }
 
+function boardCreate() {
+    for (let i = 1; i <= total_amount; i++) {
+        const POOLS_div = document.createElement("div");
+
+        POOLS_div.classList.add("play_pool--pools");
+        PLAY_POOL.appendChild(POOLS_div);
+
+        gridAreaSet(POOLS_div, i);
+    }
+}
+
 function gridAreaSet(element, position) {
     let row = Math.floor(position / columns_amount);
     let col = position % columns_amount;
@@ -44,30 +58,6 @@ function gridAreaSet(element, position) {
     }
 
     element.style.gridArea = `${row} / ${col}`;
-}
-
-function boardCreate() {
-    for (let i = 1; i <= total_amount; i++) {
-        const POOLS_div = document.createElement("div");
-
-        POOLS_div.classList.add("play_pool--pools");
-        PLAY_POOL.appendChild(POOLS_div);
-
-        gridAreaSet(POOLS_div, i);
-    }
-}
-
-function foodCreate(player_position) {
-    let food_position = Math.floor(Math.random() * total_amount);
-
-    if (food_position == player_position) {
-        foodCreate(player_position);
-    } else {
-        food.classList.add("play_pool--food");
-        PLAY_POOL.appendChild(food);
-
-        gridAreaSet(food, food_position);
-    }
 }
 
 function directionCalculate(e) {
@@ -90,44 +80,66 @@ function moveFunction() {
     if (gameStatus == 0) {
         move = setInterval(function() {
             moveFunction();
-        }, speed / acceleration);
+        }, baseSpeed);
         gameStatus = 1;
     }
 
     prevDirection = direction;
 
-    let playerRowStartNumber = parseInt(
+    let pRow = parseInt(
         getComputedStyle(player).getPropertyValue("grid-row-start")
     );
-    let playerColumnStartNumber = parseInt(
+    let pCol = parseInt(
         getComputedStyle(player).getPropertyValue("grid-column-start")
     );
 
-    foodCollision(playerRowStartNumber, playerColumnStartNumber);
-    tailMove(playerRowStartNumber, playerColumnStartNumber);
+    tailMove(pRow, pCol);
+    wallCollision(pRow, pCol);
+    foodCollision(pRow, pCol);
+    tailCollision();
+}
 
+function wallCollision(pRow, pCol){
     if (direction == "left") {
-        if (playerColumnStartNumber - 1 != 0) {
-            player.style.gridColumnStart = playerColumnStartNumber - 1;
-        } else breakGame();
+        if (pCol - 1 != 0) {
+            player.style.gridColumnStart = pCol - 1;
+        }
+        else breakGame();
     }
 
     if (direction == "up") {
-        if (playerRowStartNumber - 1 != 0) {
-            player.style.gridRowStart = playerRowStartNumber - 1;
-        } else breakGame();
+        if (pRow - 1 != 0) {
+            player.style.gridRowStart = pRow - 1;
+        }
+        else breakGame();
     }
 
     if (direction == "right") {
-        if (playerColumnStartNumber + 1 != columns_amount + 1) {
-            player.style.gridColumnStart = playerColumnStartNumber + 1;
-        } else breakGame();
+        if (pCol + 1 != columns_amount + 1) {
+            player.style.gridColumnStart = pCol + 1;
+        }
+        else breakGame();
     }
 
     if (direction == "down") {
-        if (playerRowStartNumber + 1 != rows_amount + 1) {
-            player.style.gridRowStart = playerRowStartNumber + 1;
-        } else breakGame();
+        if (pRow + 1 != rows_amount + 1) {
+            player.style.gridRowStart = pRow + 1;
+        }
+        else breakGame();
+    }
+}
+
+function tailCollision(){
+    let pRow = parseInt(getComputedStyle(player).getPropertyValue("grid-row-start"));
+    let pCol = parseInt(getComputedStyle(player).getPropertyValue("grid-column-start"));
+
+    for (let i = 0; i < TAILS.length; i++){
+        if (pRow == parseInt(getComputedStyle(TAILS[i]).getPropertyValue('grid-row-start'))
+        && pCol == parseInt(getComputedStyle(TAILS[i]).getPropertyValue('grid-column-start'))
+        )
+        {
+            breakGame();
+        }
     }
 }
 
@@ -166,7 +178,6 @@ function tailMove(pRow, pCol) {
                 );
             }
         });
-        console.log(tail_POSITION);
     }
 }
 
@@ -183,7 +194,7 @@ function foodCollision(pRow, pCol) {
         move = setInterval(function() {
             moveFunction();
         }, speed / acceleration);
-        acceleration += 0.5;
+        acceleration += baseAcceleration;
         PLAY_POOL.removeChild(food);
 
         let tail = document.createElement("div");
@@ -212,9 +223,59 @@ function foodCollision(pRow, pCol) {
             tail.style.gridColumnStart = foodColumnStartNumber;
         }
 
-        console.log(TAILS);
         foodCreate();
     }
+}
+
+function foodCreate(player_position) {
+    let food_position = Math.floor(Math.random() * total_amount);
+
+    if (food_position == player_position)
+    {
+        foodCreate(player_position);
+    }
+    else if (TAILS.length == 0)
+    {
+        PLAY_POOL.appendChild(food);
+        gridAreaSet(food, food_position);
+    }
+    else if (TAILS.length > 0 && TAILS.length != total_amount-1)
+    {
+        let fRow = Math.floor(food_position / columns_amount);
+        let fCol = food_position % columns_amount;
+        if (fRow == 0) {
+            fRow = rows_amount;
+        }
+        if (fCol == 0) {
+            fCol = columns_amount;
+        }
+
+        let stop = 0;
+
+
+        for (let i = 0; i < TAILS.length; i++){
+            if (fRow == parseInt(getComputedStyle(TAILS[i]).getPropertyValue('grid-row-start'))
+            && fCol == parseInt(getComputedStyle(TAILS[i]).getPropertyValue('grid-column-start'))
+            && stop == 0
+            )
+            {
+                stop = 1;
+            }
+        }
+
+        if (stop != 1)
+        {
+            PLAY_POOL.appendChild(food);
+            food.style.gridRowStart = fRow;
+            food.style.gridColumnStart = fCol;
+        }
+        else
+        {
+            foodCreate(player_position);
+        }
+
+    }
+
 }
 
 function breakGame() {
@@ -232,8 +293,8 @@ function breakGame() {
 
     gameStatus = 0;
     direction = "none";
-    acceleration = 5;
-    speed = 1000;
+    acceleration = 1;
+    speed = baseSpeed;
 
     GameStart();
 }
