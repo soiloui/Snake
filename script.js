@@ -377,12 +377,12 @@ function gameWin() {
 
 
     async function fetchData(){
-        const res = await fetch('https://my-json-server.typicode.com/soiloui/Book-Store/Book')
+        const res = await fetch('https://my-json-server.typicode.com/soiloui/Snake/Scores')
         const data = await res.json();
-        data.forEach(book => {
-            LIBRARY.push(book);
+        data.forEach(score => {
+            SCORES_TABLE.push(score);
         });
-        showBook();
+        showScore();
     }
     fetchData()
         .catch(error=>{
