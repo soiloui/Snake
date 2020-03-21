@@ -267,10 +267,6 @@ function foodCollision(pRow, pCol) {
 function foodCreate(player_position) {
     let food_position = Math.floor(Math.random() * total_amount);
 
-    //TO REMOVE
-    if (score > 8){gameWin();}
-    //TO REMOVE
-
     if (food_position == player_position)
     {
         foodCreate(player_position);
@@ -418,6 +414,7 @@ function gameWin() {
 
     // window.open('https://youtu.be/JrO46CJd9ns?t=28', '_blank');
     gameStatus = 2;
+    breakGame();
 }
 function breakGame() {
     intervals.forEach(element => {
