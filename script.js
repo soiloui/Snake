@@ -23,6 +23,7 @@ const food = document.createElement("div");
 food.classList.add("play_pool--food");
 
 let TAILS = [];
+let SCORES_TABLE = [];
 let intervals = [];
 
 let gameStatus = 0;
@@ -86,6 +87,15 @@ function directionCalculate(e) {
         }, baseSpeed);
         intervals[0] = move;
         gameStatus = 1;
+    }
+
+    if (gameStatus == 2){
+        let WIN_div = document.querySelector('#win_div');
+        WIN_div.innerHTML = '';
+        WIN_div.remove();
+        gameStatus = 0;
+        SCORES_TABLE = [];
+        breakGame();
     }
 }
 
@@ -371,9 +381,13 @@ function blockScroll(e){
 function gameWin() {
     const WIN_div = document.createElement('div');
     WIN_div.classList.add('end-box');
+    WIN_div.id = 'win_div';
+    WIN_div.innerHTML = 'WIN';
     body.appendChild(WIN_div);
-    WIN_div.innerHTML = `<span>WIN</spin>`;
 
+    const SCORES_ul = document.createElement('ul');
+    SCORES_ul.classList.add('end-box__scores');
+    WIN_div.appendChild(SCORES_ul);
 
 
     async function fetchData(){
@@ -382,17 +396,29 @@ function gameWin() {
         data.forEach(score => {
             SCORES_TABLE.push(score);
         });
-        showScore();
+        let SCORE_sort = SCORES_TABLE
+        .sort((a, b) => a.score > b.score ? 1 : -1)
+        .sort((a, b) => a.name > b.name ? 1 : -1)
+        .map(score =>  `
+        <li class='end-box__scores--score'>
+            <h3>${score.name}</h3>
+            <p>Score: ${score.count}</p>
+        </li>
+        `)
+        .join('');
+
+        SCORES_ul.innerHTML = SCORE_sort;
     }
+
+
     fetchData()
         .catch(error=>{
             console.log(error);
         });
 
 
-
     // window.open('https://youtu.be/JrO46CJd9ns?t=28', '_blank');
-    breakGame();
+    gameStatus = 2;
 }
 function breakGame() {
     intervals.forEach(element => {
@@ -404,7 +430,9 @@ function breakGame() {
 
     TAILS = [];
 
-    gameStatus = 0;
+    if (gameStatus !=2){
+        gameStatus = 0;
+    }
     score = 0;
     SCORE_div.innerText = `SCORE:`;
     direction = "none";

@@ -2,15 +2,15 @@
     "Scores":[
     {
         "name": "Pizza",
-        "count": 20
+        "count": "20"
     },
     {
         "name": "Sonel",
-        "count": 50
+        "count": "50"
     },
     {
         "name": "Minos",
-        "count": 100
+        "count": "100"
     }
     ]
 }
