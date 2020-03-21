@@ -98,3 +98,23 @@ body{
         }
     }
 }
+
+.end-box{
+    z-index: 5;
+    position: fixed;
+    top: 5%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    height: 80%;
+    background: rgba($color: #fff, $alpha: .9);
+    border: 2px solid #000;
+    border-radius: 10%;
+    font-size: 4rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

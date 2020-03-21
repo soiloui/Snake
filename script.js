@@ -257,6 +257,10 @@ function foodCollision(pRow, pCol) {
 function foodCreate(player_position) {
     let food_position = Math.floor(Math.random() * total_amount);
 
+    //TO REMOVE
+    if (score > 8){gameWin();}
+    //TO REMOVE
+
     if (food_position == player_position)
     {
         foodCreate(player_position);
@@ -301,6 +305,10 @@ function foodCreate(player_position) {
             foodCreate(player_position);
         }
 
+    }
+    else if (TAILS.length+1 == total_amount)
+    {
+        gameWin();
     }
 
 }
@@ -360,6 +368,32 @@ function blockScroll(e){
     }
 }
 
+function gameWin() {
+    const WIN_div = document.createElement('div');
+    WIN_div.classList.add('end-box');
+    body.appendChild(WIN_div);
+    WIN_div.innerHTML = `<span>WIN</spin>`;
+
+
+
+    async function fetchData(){
+        const res = await fetch('https://my-json-server.typicode.com/soiloui/Book-Store/Book')
+        const data = await res.json();
+        data.forEach(book => {
+            LIBRARY.push(book);
+        });
+        showBook();
+    }
+    fetchData()
+        .catch(error=>{
+            console.log(error);
+        });
+
+
+
+    // window.open('https://youtu.be/JrO46CJd9ns?t=28', '_blank');
+    breakGame();
+}
 function breakGame() {
     intervals.forEach(element => {
         clearInterval(element);
@@ -377,6 +411,7 @@ function breakGame() {
 
     GameStart();
 }
+
 
 GameStart();
 
