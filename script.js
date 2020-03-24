@@ -35,7 +35,7 @@ let acceleration = .1;
 let baseSpeed = 300;
 let direction = "none";
 let prevDirection = "none";
-
+let bufforKey = "none";
 
 //------------------- FUNCTIONS -----------------------
 
@@ -43,8 +43,10 @@ let prevDirection = "none";
 function GameStart() {
     boardCreate();
 
-    let player_position = Math.floor(Math.random() * total_amount);
+    speedChange();
+    accelerationChange();
 
+    let player_position = Math.floor(Math.random() * total_amount);
     gridAreaSet(player, player_position);
     PLAY_POOL.appendChild(player);
 
@@ -76,14 +78,30 @@ function gridAreaSet(element, position) {
 
 //CONTROLS
 function directionCalculate(e) {
-    if (e.keyCode == 37 && prevDirection != "right") {
-        direction = "left";
-    } else if (e.keyCode == 38 && prevDirection != "down") {
-        direction = "up";
-    } else if (e.keyCode == 39 && prevDirection != "left") {
-        direction = "right";
-    } else if (e.keyCode == 40 && prevDirection != "up") {
-        direction = "down";
+    if (e.keyCode == 37) {
+        if ("right" != prevDirection) {
+            direction = "left";
+        } else {
+            bufforKey = "left";
+        }
+    } else if (e.keyCode == 38) {
+        if ("down" != prevDirection) {
+            direction = "up";
+        } else {
+            bufforKey = "up";
+        }
+    } else if (e.keyCode == 39) {
+        if ("left" != prevDirection) {
+            direction = "right";
+        } else {
+            bufforKey = "right";
+        }
+    } else if (e.keyCode == 40) {
+        if ("up" != prevDirection) {
+            direction = "down";
+        } else {
+            bufforKey = "down";
+        }
     }
     else if (e.keyCode == 82) {
         breakGame();
@@ -165,6 +183,11 @@ function moveFunction() {
     wallCollision(pRow, pCol);
     foodCollision(pRow, pCol);
     tailCollision();
+
+    if (bufforKey != "none"){
+        direction = bufforKey;
+        bufforKey = "none";
+    }
 }
 function wallCollision(pRow, pCol){
     if (direction == "left") {
