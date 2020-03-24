@@ -185,7 +185,13 @@ function moveFunction() {
     tailCollision();
 
     if (bufforKey != "none"){
-        direction = bufforKey;
+        if (prevDirection == "right" && bufforKey == "left"){}
+        else if (prevDirection == "left" && bufforKey == "right"){}
+        else if (prevDirection == "up" && bufforKey == "down"){}
+        else if (prevDirection == "down" && bufforKey == "up"){}
+        else{
+            direction = bufforKey;
+        }
         bufforKey = "none";
     }
 }
