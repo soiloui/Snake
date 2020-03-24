@@ -1,4 +1,6 @@
 `use strict`;
+//------------------- VARIABLES & ARRAYS -----------------------
+
 const body = document.querySelector('body');
 const PLAY_POOL = document.querySelector("#pool");
 const SCORE_div = document.querySelector("#score");
@@ -35,7 +37,9 @@ let direction = "none";
 let prevDirection = "none";
 
 
+//------------------- FUNCTIONS -----------------------
 
+//CREATING A GAME
 function GameStart() {
     boardCreate();
 
@@ -56,7 +60,6 @@ function boardCreate() {
         gridAreaSet(POOLS_div, i);
     }
 }
-
 function gridAreaSet(element, position) {
     let row = Math.floor(position / columns_amount);
     let col = position % columns_amount;
@@ -70,6 +73,8 @@ function gridAreaSet(element, position) {
 
     element.style.gridArea = `${row} / ${col}`;
 }
+
+//CONTROLS
 function directionCalculate(e) {
     if (e.keyCode == 37 && prevDirection != "right") {
         direction = "left";
@@ -80,13 +85,15 @@ function directionCalculate(e) {
     } else if (e.keyCode == 40 && prevDirection != "up") {
         direction = "down";
     }
+    else if (e.keyCode == 82) {
+        breakGame();
+    }
+    else if (e.keyCode == 80) {
+        pasueGame();
+    }
 
-    if (gameStatus == 0 && intervals.length == 0) {
-        let move = setInterval(function() {
-            moveFunction();
-        }, baseSpeed);
-        intervals[0] = move;
-        gameStatus = 1;
+    if (intervals.length == 0 && direction != "none") {
+        intervalsGo();
     }
 
     if (gameStatus == 2){
@@ -98,7 +105,52 @@ function directionCalculate(e) {
         breakGame();
     }
 }
+function intervalsGo() {
+    if (gameStatus == '1')
+    {
+        let move = setInterval(function() {
+            moveFunction();
+        }, (baseSpeed / (baseAcceleration + TAILS.length*acceleration)));
+        intervals[0] = move;
+    }
+    else if (gameStatus == '0')
+    {
+        let move = setInterval(function() {
+            moveFunction();
+        }, baseSpeed);
+        intervals[0] = move;
+        gameStatus = 1;
+    }
+}
+function scoreCount(fRow, fCol) {
+    let addScore = 10 + TAILS.length + acceleration*100
 
+    score += addScore;
+    SCORE_div.innerText = `SCORE: ${score}`;
+
+    const SCORE_EFFECT_span = document.createElement('span');
+    SCORE_EFFECT_span.classList.add('play_pool--score');
+
+    SCORE_EFFECT_span.innerText = `+${addScore}`;
+
+    SCORE_EFFECT_span.style.gridRowStart = fRow;
+    SCORE_EFFECT_span.style.gridColumnStart = fCol;
+    SCORE_EFFECT_span.style.opacity = 1;
+
+    PLAY_POOL.appendChild(SCORE_EFFECT_span);
+    setTimeout(function() {SCORE_EFFECT_span.style.opacity = 0;}, 500);
+    setTimeout(function() {SCORE_EFFECT_span.remove();}, 1000);
+
+}
+function blockScroll(e){
+    if (e.target != PLAY_POOL && e.target.parentNode != PLAY_POOL){
+        body.style.overflow = 'auto';
+    } else {
+        body.style.overflow = 'hidden';
+    }
+}
+
+//MOVING & EATING
 function moveFunction() {
     let pRow = parseInt(
         getComputedStyle(player).getPropertyValue("grid-row-start")
@@ -159,7 +211,7 @@ function wallCollision(pRow, pCol){
         else breakGame();
     }
 
-    if (direction == 'none'){
+    if (direction == "none"){
         breakGame();
     }
 }
@@ -251,11 +303,7 @@ function foodCollision(pRow, pCol) {
 
         clearInterval(intervals[0]);
 
-        let move = setInterval(function() {
-            moveFunction();
-        }, (baseSpeed / (baseAcceleration + TAILS.length*acceleration)));
-
-        intervals[0] = move;
+        intervalsGo();
 
         PLAY_POOL.removeChild(food);
 
@@ -319,27 +367,7 @@ function foodCreate(player_position) {
 
 }
 
-function scoreCount(fRow, fCol) {
-    let addScore = 10 + TAILS.length + acceleration*100
-
-    score += addScore;
-    SCORE_div.innerText = `SCORE: ${score}`;
-
-    const SCORE_EFFECT_span = document.createElement('span');
-    SCORE_EFFECT_span.classList.add('play_pool--score');
-
-    SCORE_EFFECT_span.innerText = `+${addScore}`;
-
-    SCORE_EFFECT_span.style.gridRowStart = fRow;
-    SCORE_EFFECT_span.style.gridColumnStart = fCol;
-    SCORE_EFFECT_span.style.opacity = 1;
-
-    PLAY_POOL.appendChild(SCORE_EFFECT_span);
-    setTimeout(function() {SCORE_EFFECT_span.style.opacity = 0;}, 500);
-    setTimeout(function() {SCORE_EFFECT_span.remove();}, 1000);
-
-}
-
+//USER SETTINGS
 function speedChange() {
     baseSpeed = 1500/SPEED_input.value;
     SPEED_input.previousElementSibling.innerText = `Base speed: ${SPEED_input.value}`;
@@ -366,14 +394,43 @@ function resetSettings() {
     sizeChange();
 }
 
-function blockScroll(e){
-    if (e.target != PLAY_POOL && e.target.parentNode != PLAY_POOL){
-        body.style.overflow = 'auto';
-    } else {
-        body.style.overflow = 'hidden';
+//GAME ACTIONS
+function pasueGame() {
+    if (gameStatus == '1')
+    {
+        intervals.forEach(element => {
+            clearInterval(element);
+        });
+        gameStatus = 'pause';
+    }
+    else if (gameStatus == 'pause')
+    {
+        gameStatus = 1;
+        intervalsGo();
     }
 }
+function breakGame() {
+    intervals.forEach(element => {
+        clearInterval(element);
+    });
+    intervals = [];
 
+    PLAY_POOL.innerHTML = '';
+
+    TAILS = [];
+
+    if (gameStatus !=2){
+        gameStatus = 0;
+    }
+    score = 0;
+    SCORE_div.innerText = `SCORE:`;
+    direction = "none";
+    prevDirection = "none";
+
+    player.style.borderRadius = '0px';
+
+    GameStart();
+}
 function gameWin() {
     const WIN_div = document.createElement('div');
     WIN_div.classList.add('end-box');
@@ -416,29 +473,13 @@ function gameWin() {
     gameStatus = 2;
     breakGame();
 }
-function breakGame() {
-    intervals.forEach(element => {
-        clearInterval(element);
-    });
-    intervals = [];
 
-    PLAY_POOL.innerHTML = '';
 
-    TAILS = [];
-
-    if (gameStatus !=2){
-        gameStatus = 0;
-    }
-    score = 0;
-    SCORE_div.innerText = `SCORE:`;
-    direction = "none";
-
-    GameStart();
-}
-
+// ------------------- GAME TRIGGERS -----------------------
 
 GameStart();
 
+//LISTENERS
 window.addEventListener("keydown", directionCalculate);
 
 SPEED_input.addEventListener("change", speedChange);
