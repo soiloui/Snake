@@ -4,12 +4,19 @@
         justify-content: space-between;
         grid-template-columns: 100px auto 100px;
     }
-
     .informations{
         font-size: .7rem;
 
         &--information{
             margin-bottom: 10px;
+        }
+    }
+    .storages{
+        &--storage{
+            width: 100px;
+        }
+        &>:nth-child(n){
+            font-size: .8rem;
         }
     }
 }
@@ -21,6 +28,14 @@
     }
     .informations{
         font-size: .9rem;
+    }
+    .storages{
+        &--storage{
+            width: 150px;
+        }
+        &>:nth-child(n){
+            font-size: .9rem;
+        }
     }
 }
 @include media-lg{

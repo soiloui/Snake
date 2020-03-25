@@ -54,6 +54,9 @@ function checkUser() {
         localStorage.setItem('user', JSON.stringify(new_name));
     }
 
+    const NICKNAME_span = document.querySelector('#NICKNAME_span');
+    NICKNAME_span.innerText = `Nickname: ${nickname}`
+
     high_scores = JSON.parse(localStorage.getItem('scores'));
     if (high_scores == null){
         const noob_scores = {
@@ -517,7 +520,6 @@ function gameWin(message) {
     checkUser();
     let SCORES_TABLE = high_scores.players;
     SCORES_TABLE.push({name: nickname, score: score});
-    console.log(SCORES_TABLE);
     localStorage.removeItem('scores');
 
 
@@ -534,9 +536,8 @@ function gameWin(message) {
         .join('');
 
 
-
-
-    high_scores.players = SCORES_TABLE;
+    high_scores.players = SCORES_TABLE.filter((person, index) =>
+    (index < 5));
     localStorage.setItem('scores', JSON.stringify(high_scores));
     SCORES_ul.innerHTML = SCORE_sort;
 
@@ -546,7 +547,7 @@ function gameWin(message) {
     setTimeout(function(){window.addEventListener("keydown", directionCalculate);}
     , 1500);
     gameStatus = 2;
-    breakGame();
+
 }
 
 
