@@ -8,7 +8,8 @@ const SPEED_input = document.querySelector('#speed');
 const SIZE_input = document.querySelector('#size');
 const ACCELERATION_input = document.querySelector('#acceleration');
 const RESET_SETT_input = document.querySelector('#reset_settings');
-
+const NICKNAME_btn = document.querySelector('#NICKNAME_btn');
+const HIGHSCORE_btn = document.querySelector('#HIGHSCORE_btn');
 
 let rows_amount = getComputedStyle(PLAY_POOL)
     .getPropertyValue("grid-template-rows")
@@ -46,16 +47,15 @@ let high_scores = null;
 function checkUser() {
     nickname = JSON.parse(localStorage.getItem('user'));
     if (nickname == null){
-        let new_name = window.prompt("Podaj swój nick:", "user");
-        if (new_name == null || new_name == ""){
-            new_name = 'Nie podałam imienia :)'
+        let nickname = window.prompt("Podaj swój nick:", "user");
+        if (nickname == null || nickname == ""){
+            nickname = 'Nie podałam imienia :)'
         }
-
-        localStorage.setItem('user', JSON.stringify(new_name));
+        localStorage.setItem('user', JSON.stringify(nickname));
     }
 
     const NICKNAME_span = document.querySelector('#NICKNAME_span');
-    NICKNAME_span.innerText = `Nickname: ${nickname}`
+    NICKNAME_span.innerText = `Nickname: ${JSON.parse(localStorage.getItem('user'))}`;
 
     high_scores = JSON.parse(localStorage.getItem('scores'));
     if (high_scores == null){
@@ -150,16 +150,21 @@ function directionCalculate(e) {
         pasueGame();
     }
 
-    if (intervals.length == 0 && direction != "none") {
-        intervalsGo();
-    }
 
-    if (gameStatus == 2){
-        let WIN_div = document.querySelector('#win_div');
+    let WIN_div_exist = 0;
+    let WIN_div = document.querySelector('#win_div');
+    if ((gameStatus == 2 || gameStatus == 0 || gameStatus == 'pause') && WIN_div != null){
+        WIN_div_exist = 1;
         WIN_div.innerHTML = '';
         WIN_div.remove();
-        gameStatus = 0;
-        breakGame();
+        if (gameStatus == 2){
+            gameStatus = 0;
+            breakGame();
+        }
+    }
+
+    if (intervals.length == 0 && direction != "none" && WIN_div_exist == 0) {
+        intervalsGo();
     }
 }
 function intervalsGo() {
@@ -199,11 +204,21 @@ function scoreCount(fRow, fCol) {
     setTimeout(function() {SCORE_EFFECT_span.remove();}, 1000);
 
 }
-function blockScroll(e){
+function offClick(e){
     if (e.target != PLAY_POOL && e.target.parentNode != PLAY_POOL){
         body.style.overflow = 'auto';
     } else {
         body.style.overflow = 'hidden';
+    }
+
+    let WIN_div = document.querySelector('#win_div');
+    if (WIN_div != null && e.target != WIN_div){
+        WIN_div.innerHTML = '';
+        WIN_div.remove();
+        if (gameStatus == 2){
+            gameStatus = 0;
+            breakGame();
+        }
     }
 }
 
@@ -430,7 +445,7 @@ function foodCreate(player_position) {
     }
     else if (TAILS.length+1 == total_amount)
     {
-        gameWin('WIN!');
+        gameWin('WIN!', 1200, 'win');
     }
 
 }
@@ -506,7 +521,7 @@ function breakGame() {
 
     GameStart();
 }
-function gameWin(message) {
+function gameWin(message, time, trigger) {
     const WIN_div = document.createElement('div');
     WIN_div.classList.add('end-box');
     WIN_div.id = 'win_div';
@@ -544,10 +559,20 @@ function gameWin(message) {
 
 
     window.removeEventListener("keydown", directionCalculate);
-    setTimeout(function(){window.addEventListener("keydown", directionCalculate);}
-    , 1500);
-    gameStatus = 2;
+    setTimeout(function(){
+        window.addEventListener("keydown", directionCalculate);}, time);
 
+    document.removeEventListener("click", offClick);
+    setTimeout(function(){
+        document.addEventListener("click", offClick);}, time);
+
+    if (trigger == 'win'){
+        gameStatus = 2;
+    } else if (trigger == 'info'){
+        if (gameStatus == 1){
+            pasueGame();
+        }
+    }
 }
 
 
@@ -557,10 +582,16 @@ GameStart();
 
 //LISTENERS
 window.addEventListener("keydown", directionCalculate);
+document.addEventListener("click", offClick);
 
 SPEED_input.addEventListener("change", speedChange);
 SIZE_input.addEventListener("change", sizeChange);
 ACCELERATION_input.addEventListener("change", accelerationChange);
 RESET_SETT_input.addEventListener("click", function(){setTimeout(resetSettings)}, 15);
-
-document.addEventListener("click", blockScroll);
+HIGHSCORE_btn. addEventListener("click", function(){
+    gameWin('HIGHSCORES', 50, 'info');
+});
+NICKNAME_btn. addEventListener("click", function(){
+    localStorage.removeItem('user');
+    checkUser();
+});

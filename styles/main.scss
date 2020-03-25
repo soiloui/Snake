@@ -41,6 +41,8 @@ body{
     display: flex;
     flex-direction: column;
     text-overflow: hidden;
+
+    user-select: none;
 }
 
 .play_pool{

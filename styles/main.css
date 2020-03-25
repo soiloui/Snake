@@ -113,6 +113,10 @@ body {
       -ms-flex-direction: column;
           flex-direction: column;
   text-overflow: hidden;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 .play_pool {
