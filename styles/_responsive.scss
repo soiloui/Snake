@@ -1,0 +1,29 @@
+@include media-sm{
+    body{
+        display: grid;
+        justify-content: space-between;
+        grid-template-columns: 100px auto 100px;
+    }
+
+    .informations{
+        font-size: .7rem;
+
+        &--information{
+            margin-bottom: 10px;
+        }
+    }
+}
+@include media-md{
+    body{
+        display: grid;
+        justify-content: space-between;
+        grid-template-columns: 300px auto 300px;
+    }
+    .informations{
+        font-size: .9rem;
+    }
+}
+@include media-lg{
+}
+@include media-xl{
+}

@@ -1,5 +1,26 @@
 @import url('https://fonts.googleapis.com/css?family=Baloo+Chettan+2|Roboto+Mono&display=swap');
 
+@mixin media-sm{
+    @media screen and (min-width: 50px){
+        @content;
+    }
+}
+@mixin media-md{
+    @media screen and (min-width: 850px){
+        @content;
+    }
+}
+@mixin media-lg{
+    @media screen and (min-width: 1024px){
+        @content;
+    }
+}
+@mixin media-xl{
+    @media screen and (min-width: 1600px){
+        @content;
+    }
+}
+
 *, *::after, *::before{
     margin: 0;
     padding: 0;

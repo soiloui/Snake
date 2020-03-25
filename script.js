@@ -25,7 +25,6 @@ const food = document.createElement("div");
 food.classList.add("play_pool--food");
 
 let TAILS = [];
-let SCORES_TABLE = [];
 let intervals = [];
 
 let gameStatus = 0;
@@ -37,20 +36,60 @@ let direction = "none";
 let prevDirection = "none";
 let bufforKey = "none";
 
+const noob_scores = {
+    players:[
+        {
+            name: "Noob",
+            score: 200
+        },
+        {
+            name: "Amator",
+            score: 700
+        },
+        {
+            name: "Player",
+            score: 2000
+        }
+    ]
+};
+// localStorage.removeItem('scores');
+let nickname = JSON.parse(localStorage.getItem('user'));
+let high_scores = JSON.parse(localStorage.getItem('scores'));
+
 //------------------- FUNCTIONS -----------------------
 
 //CREATING A GAME
-function GameStart() {
-    boardCreate();
+function checkUser() {
+    if (nickname == null){
+        let new_name = window.prompt("Podaj swój nick:", "user");
+        if (new_name == null || new_name == ""){
+            new_name = 'Nie podałam imienia :)'
+        }
 
+        localStorage.setItem('user', JSON.stringify(new_name));
+    }
+
+
+    if (high_scores == null){
+        localStorage.setItem('scores', JSON.stringify(noob_scores));
+    }
+    else{
+        console.log(high_scores.players[0]);
+    }
+}
+function GameStart() {
     speedChange();
     accelerationChange();
+    sizeChange();
+
+    boardCreate();
 
     let player_position = Math.floor(Math.random() * total_amount);
     gridAreaSet(player, player_position);
     PLAY_POOL.appendChild(player);
 
     foodCreate(player_position);
+    checkUser();
 }
 function boardCreate() {
     for (let i = 1; i <= total_amount; i++) {
@@ -119,7 +158,6 @@ function directionCalculate(e) {
         WIN_div.innerHTML = '';
         WIN_div.remove();
         gameStatus = 0;
-        SCORES_TABLE = [];
         breakGame();
     }
 }
@@ -179,9 +217,9 @@ function moveFunction() {
 
     prevDirection = direction;
 
+    foodCollision(pRow, pCol);
     tailMove(pRow, pCol);
     wallCollision(pRow, pCol);
-    foodCollision(pRow, pCol);
     tailCollision();
 
     if (bufforKey != "none"){
@@ -391,7 +429,7 @@ function foodCreate(player_position) {
     }
     else if (TAILS.length+1 == total_amount)
     {
-        gameWin();
+        gameWin('WIN!');
     }
 
 }
@@ -405,22 +443,28 @@ function accelerationChange() {
     acceleration = ACCELERATION_input.value;
     ACCELERATION_input.previousElementSibling.innerText = `Acceleration: ${ACCELERATION_input.value}`;
 }
-function sizeChange() {
+function sizeChange(e) {
     let amount = SIZE_input.value
     SIZE_input.previousElementSibling.innerText = `AREA OF PLAY: ${amount}`;
 
-    PLAY_POOL.style.gridTemplateRows = `repeat(${amount}, 35px)`;
-    PLAY_POOL.style.gridTemplateColumns = `repeat(${amount}, 35px)`;
+    let size_of_pools = 350/amount;
+
+    PLAY_POOL.style.gridTemplateRows = `repeat(${amount}, ${size_of_pools}px)`;
+    PLAY_POOL.style.gridTemplateColumns = `repeat(${amount}, ${size_of_pools}px)`;
 
     rows_amount = amount;
     columns_amount = amount;
     total_amount = rows_amount*columns_amount;
-    breakGame();
+
+    if (typeof e != 'undefined'){
+        breakGame();
+    }
 }
 function resetSettings() {
     speedChange();
     accelerationChange();
     sizeChange();
+    breakGame();
 }
 
 //GAME ACTIONS
@@ -455,34 +499,39 @@ function breakGame() {
     SCORE_div.innerText = `SCORE:`;
     direction = "none";
     prevDirection = "none";
+    bufforKey = "none";
 
     player.style.borderRadius = '0px';
 
     GameStart();
 }
-function gameWin() {
+function gameWin(message) {
     const WIN_div = document.createElement('div');
     WIN_div.classList.add('end-box');
     WIN_div.id = 'win_div';
-    WIN_div.innerHTML = 'WIN';
+    WIN_div.innerHTML = `${message}</br>TOP 10`;
     body.appendChild(WIN_div);
 
     const SCORES_ul = document.createElement('ul');
     SCORES_ul.classList.add('end-box__scores');
     WIN_div.appendChild(SCORES_ul);
 
+    let SCORES_TABLE = [];
+
 
     async function fetchData(){
-        const res = await fetch('https://my-json-server.typicode.com/soiloui/Snake/Scores')
+        const res = await fetch('https://my-json-server.typicode.com/soiloui/Snake/Scores');
+
         const data = await res.json();
         data.forEach(score => {
             SCORES_TABLE.push(score);
         });
+
         let SCORE_sort = SCORES_TABLE
         .sort((a, b) => a.score > b.score ? 1 : -1)
-        .map(score =>  `
+        .map((score, index) =>  `
         <li class='end-box__scores--score'>
-            <h3>${score.name}</h3>
+            <h3>${index+1}. ${score.name}</h3>
             <p>Score: ${score.count}</p>
         </li>
         `)
@@ -491,14 +540,15 @@ function gameWin() {
         SCORES_ul.innerHTML = SCORE_sort;
     }
 
-
     fetchData()
         .catch(error=>{
             console.log(error);
         });
 
 
-    // window.open('https://youtu.be/JrO46CJd9ns?t=28', '_blank');
+    window.removeEventListener("keydown", directionCalculate);
+    setTimeout(function(){window.addEventListener("keydown", directionCalculate);}
+    , 1500);
     gameStatus = 2;
     breakGame();
 }
