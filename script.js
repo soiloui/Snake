@@ -36,30 +36,15 @@ let direction = "none";
 let prevDirection = "none";
 let bufforKey = "none";
 
-const noob_scores = {
-    players:[
-        {
-            name: "Noob",
-            score: 200
-        },
-        {
-            name: "Amator",
-            score: 700
-        },
-        {
-            name: "Player",
-            score: 2000
-        }
-    ]
-};
-// localStorage.removeItem('scores');
-let nickname = JSON.parse(localStorage.getItem('user'));
-let high_scores = JSON.parse(localStorage.getItem('scores'));
+
+let nickname = null;
+let high_scores = null;
 
 //------------------- FUNCTIONS -----------------------
 
 //CREATING A GAME
 function checkUser() {
+    nickname = JSON.parse(localStorage.getItem('user'));
     if (nickname == null){
         let new_name = window.prompt("Podaj swój nick:", "user");
         if (new_name == null || new_name == ""){
@@ -69,12 +54,25 @@ function checkUser() {
         localStorage.setItem('user', JSON.stringify(new_name));
     }
 
-
+    high_scores = JSON.parse(localStorage.getItem('scores'));
     if (high_scores == null){
+        const noob_scores = {
+            players:[
+                {
+                    name: "Noob",
+                    score: 200
+                },
+                {
+                    name: "Amator",
+                    score: 700
+                },
+                {
+                    name: "Player",
+                    score: 2000
+                }
+            ]
+        };
         localStorage.setItem('scores', JSON.stringify(noob_scores));
-    }
-    else{
-        console.log(high_scores.players[0]);
     }
 }
 function GameStart() {
@@ -516,34 +514,32 @@ function gameWin(message) {
     SCORES_ul.classList.add('end-box__scores');
     WIN_div.appendChild(SCORES_ul);
 
-    let SCORES_TABLE = [];
+    checkUser();
+    let SCORES_TABLE = high_scores.players;
+    SCORES_TABLE.push({name: nickname, score: score});
+    console.log(SCORES_TABLE);
+    localStorage.removeItem('scores');
 
 
-    async function fetchData(){
-        const res = await fetch('https://my-json-server.typicode.com/soiloui/Snake/Scores');
-
-        const data = await res.json();
-        data.forEach(score => {
-            SCORES_TABLE.push(score);
-        });
-
-        let SCORE_sort = SCORES_TABLE
-        .sort((a, b) => a.score > b.score ? 1 : -1)
-        .map((score, index) =>  `
+    let SCORE_sort = SCORES_TABLE
+        .sort((a, b) => a.score < b.score ? 1 : -1)
+        .map((person, index) =>  `
         <li class='end-box__scores--score'>
-            <h3>${index+1}. ${score.name}</h3>
-            <p>Score: ${score.count}</p>
+            <h3>${index+1}. ${person.name}</h3>
+            <p>Score: ${person.score}</p>
         </li>
         `)
+        .filter((person, index) =>
+        (index < 5))
         .join('');
 
-        SCORES_ul.innerHTML = SCORE_sort;
-    }
 
-    fetchData()
-        .catch(error=>{
-            console.log(error);
-        });
+
+
+    high_scores.players = SCORES_TABLE;
+    localStorage.setItem('scores', JSON.stringify(high_scores));
+    SCORES_ul.innerHTML = SCORE_sort;
+
 
 
     window.removeEventListener("keydown", directionCalculate);

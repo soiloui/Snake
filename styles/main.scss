@@ -98,6 +98,16 @@ body{
     }
 }
 
+.storages{
+    display: flex;
+    flex-direction: column;
+    background: #000;
+
+    &--storage{
+        font-size: 2rem;
+    }
+}
+
 .settings{
     grid-row: 3;
     grid-column: 2;
