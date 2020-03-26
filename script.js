@@ -198,7 +198,8 @@ function intervalsGo() {
     }
 }
 function scoreCount(fRow, fCol) {
-    let addScore = 10 + TAILS.length + acceleration*100
+    // let addScore = 10 + TAILS.length + acceleration*100
+    let addScore = Math.floor(10 + ((TAILS.length+1)*10 / rows_amount) + (acceleration*100 / (baseSpeed/100)));
 
     score += addScore;
     SCORE_div.innerText = `SCORE: ${score}`;
@@ -215,7 +216,6 @@ function scoreCount(fRow, fCol) {
     PLAY_POOL.appendChild(SCORE_EFFECT_span);
     setTimeout(function() {SCORE_EFFECT_span.style.opacity = 0;}, 500);
     setTimeout(function() {SCORE_EFFECT_span.remove();}, 1000);
-
 }
 function offClick(e){
     if (e.target != PLAY_POOL && e.target.parentNode != PLAY_POOL){
