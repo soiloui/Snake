@@ -40,7 +40,7 @@ let bufforKey = "none";
 
 let nickname = null;
 let high_scores = null;
-
+// localStorage.removeItem('scores');
 //------------------- FUNCTIONS -----------------------
 
 //CREATING A GAME
@@ -121,25 +121,25 @@ function directionCalculate(e) {
     if (e.keyCode == 37) {
         if ("right" != prevDirection) {
             direction = "left";
-        } else {
+        } else if(gameStatus == 1) {
             bufforKey = "left";
         }
     } else if (e.keyCode == 38) {
         if ("down" != prevDirection) {
             direction = "up";
-        } else {
+        } else if(gameStatus == 1) {
             bufforKey = "up";
         }
     } else if (e.keyCode == 39) {
         if ("left" != prevDirection) {
             direction = "right";
-        } else {
+        } else if(gameStatus == 1) {
             bufforKey = "right";
         }
     } else if (e.keyCode == 40) {
         if ("up" != prevDirection) {
             direction = "down";
-        } else {
+        } else if(gameStatus == 1) {
             bufforKey = "down";
         }
     }
@@ -392,15 +392,23 @@ function foodCollision(pRow, pCol) {
 
         scoreCount(fRow, fCol);
         tailCreate(fRow, fCol);
-        foodCreate();
+        foodCreate(0, pRow, pCol);
     }
 }
-function foodCreate(player_position) {
+function foodCreate(player_position, pRow, pCol) {
     let food_position = Math.floor(Math.random() * total_amount);
+    let fRow = Math.floor(food_position / columns_amount);
+    let fCol = food_position % columns_amount;
+    if (fRow == 0) {
+        fRow = rows_amount;
+    }
+    if (fCol == 0) {
+        fCol = columns_amount;
+    }
 
-    if (food_position == player_position)
+    if (food_position == player_position || (pRow == fRow && pCol == fCol))
     {
-        foodCreate(player_position);
+        foodCreate(player_position, pRow, pCol);
     }
     else if (TAILS.length == 0)
     {
@@ -409,15 +417,6 @@ function foodCreate(player_position) {
     }
     else if (TAILS.length > 0 && TAILS.length != total_amount-1)
     {
-        let fRow = Math.floor(food_position / columns_amount);
-        let fCol = food_position % columns_amount;
-        if (fRow == 0) {
-            fRow = rows_amount;
-        }
-        if (fCol == 0) {
-            fCol = columns_amount;
-        }
-
         let stop = 0;
 
 
@@ -439,7 +438,7 @@ function foodCreate(player_position) {
         }
         else
         {
-            foodCreate(player_position);
+            foodCreate(player_position, pRow, pCol);
         }
 
     }
@@ -447,7 +446,6 @@ function foodCreate(player_position) {
     {
         gameWin('WIN!', 1200, 'win');
     }
-
 }
 
 //USER SETTINGS
@@ -499,6 +497,13 @@ function pasueGame() {
     }
 }
 function breakGame() {
+    checkUser();
+    let SCORES_TABLE = high_scores.players;
+    if (score > SCORES_TABLE[SCORES_TABLE.length-1].score){
+        gameWin('HIGHSCORE!', 1200, 'win');
+    }
+
+
     intervals.forEach(element => {
         clearInterval(element);
     });
@@ -525,7 +530,7 @@ function gameWin(message, time, trigger) {
     const WIN_div = document.createElement('div');
     WIN_div.classList.add('end-box');
     WIN_div.id = 'win_div';
-    WIN_div.innerHTML = `${message}</br>TOP 10`;
+    WIN_div.innerHTML = `<h2 class="end-box--header">${message}</h2><h3 class="end-box--TOP-header">TOP 10</h3>`;
     body.appendChild(WIN_div);
 
     const SCORES_ul = document.createElement('ul');
@@ -542,17 +547,17 @@ function gameWin(message, time, trigger) {
         .sort((a, b) => a.score < b.score ? 1 : -1)
         .map((person, index) =>  `
         <li class='end-box__scores--score'>
-            <h3>${index+1}. ${person.name}</h3>
+            <h4>${index+1}. ${person.name}</h4>
             <p>Score: ${person.score}</p>
         </li>
         `)
         .filter((person, index) =>
-        (index < 5))
+        (index < 10))
         .join('');
 
 
     high_scores.players = SCORES_TABLE.filter((person, index) =>
-    (index < 5));
+    (index < 10));
     localStorage.setItem('scores', JSON.stringify(high_scores));
     SCORES_ul.innerHTML = SCORE_sort;
 

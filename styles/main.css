@@ -305,6 +305,7 @@ body {
   border-radius: 10%;
   font-size: 4rem;
   text-align: center;
+  word-spacing: 1px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -317,8 +318,22 @@ body {
           align-items: center;
 }
 
+.end-box--header {
+  font-size: 4rem;
+}
+
+.end-box--TOP-header {
+  font-size: 3rem;
+  font-weight: normal;
+}
+
 .end-box__scores {
-  font-size: 1rem;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 200px 200px;
+      grid-template-columns: 200px 200px;
+  height: 300px;
+  font-size: 1.2rem;
 }
 
 .end-box__scores--score {

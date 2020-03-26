@@ -171,13 +171,26 @@ body{
     border-radius: 10%;
     font-size: 4rem;
     text-align: center;
+    word-spacing: 1px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
 
+    &--header{
+        font-size: 4rem;
+    }
+    &--TOP-header{
+        font-size: 3rem;
+        font-weight: normal;
+    }
     &__scores{
-        font-size: 1rem;
+        display: grid;
+        grid-template-columns: 200px 200px;
+        height: 300px;
+
+        font-size: 1.2rem;
+
         &--score{
             text-transform: uppercase;
         }
