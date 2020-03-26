@@ -186,6 +186,7 @@ body{
     }
     &__scores{
         display: grid;
+        align-content: flex-start;
         grid-template-columns: 200px 200px;
         height: 300px;
 
@@ -193,6 +194,10 @@ body{
 
         &--score{
             text-transform: uppercase;
+
+            &--added_score{
+                color: green;
+            }
         }
     }
 }

@@ -330,6 +330,8 @@ body {
 .end-box__scores {
   display: -ms-grid;
   display: grid;
+  -ms-flex-line-pack: start;
+      align-content: flex-start;
   -ms-grid-columns: 200px 200px;
       grid-template-columns: 200px 200px;
   height: 300px;
@@ -338,5 +340,9 @@ body {
 
 .end-box__scores--score {
   text-transform: uppercase;
+}
+
+.end-box__scores--score--added_score {
+  color: green;
 }
 /*# sourceMappingURL=main.css.map */

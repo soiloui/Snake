@@ -38,20 +38,33 @@ let prevDirection = "none";
 let bufforKey = "none";
 
 
-let nickname = null;
-let high_scores = null;
 // localStorage.removeItem('scores');
+// localStorage.removeItem('user');
+let nickname = null;
+let prevNickname = JSON.parse(localStorage.getItem('user'));
+if (prevNickname == null){
+    prevNickname = 'user';
+}
+let high_scores = null;
 //------------------- FUNCTIONS -----------------------
 
 //CREATING A GAME
 function checkUser() {
     nickname = JSON.parse(localStorage.getItem('user'));
     if (nickname == null){
-        let nickname = window.prompt("Podaj swój nick:", "user");
+        let nickname = window.prompt("Podaj swój nick:", prevNickname);
         if (nickname == null || nickname == ""){
-            nickname = 'Nie podałam imienia :)'
+            nickname = prevNickname;
         }
         localStorage.setItem('user', JSON.stringify(nickname));
+
+        if (nickname.length>15){
+            window.alert("Max 15 characters!")
+            localStorage.removeItem('user');
+            checkUser();
+        } else{
+            prevNickname = nickname;
+        }
     }
 
     const NICKNAME_span = document.querySelector('#NICKNAME_span');
@@ -499,7 +512,10 @@ function pasueGame() {
 function breakGame() {
     checkUser();
     let SCORES_TABLE = high_scores.players;
-    if (score > SCORES_TABLE[SCORES_TABLE.length-1].score){
+    if (SCORES_TABLE.length<10 && score > 0){
+        gameWin('HIGHSCORE!', 1200, 'win');
+    }
+    else if (score > SCORES_TABLE[SCORES_TABLE.length-1].score && score > 0){
         gameWin('HIGHSCORE!', 1200, 'win');
     }
 
@@ -508,10 +524,9 @@ function breakGame() {
         clearInterval(element);
     });
     intervals = [];
-
+    TAILS = [];
     PLAY_POOL.innerHTML = '';
 
-    TAILS = [];
 
     if (gameStatus !=2){
         gameStatus = 0;
@@ -531,6 +546,9 @@ function gameWin(message, time, trigger) {
     WIN_div.classList.add('end-box');
     WIN_div.id = 'win_div';
     WIN_div.innerHTML = `<h2 class="end-box--header">${message}</h2><h3 class="end-box--TOP-header">TOP 10</h3>`;
+    if (trigger == 'win'){
+        WIN_div.innerHTML += `<h4 class="end-box--TOP-header">Score: ${score}</h4>`;
+    }
     body.appendChild(WIN_div);
 
     const SCORES_ul = document.createElement('ul');
@@ -539,7 +557,9 @@ function gameWin(message, time, trigger) {
 
     checkUser();
     let SCORES_TABLE = high_scores.players;
-    SCORES_TABLE.push({name: nickname, score: score});
+    if (score > 0){
+        SCORES_TABLE.push({name: nickname, score: score});
+    }
     localStorage.removeItem('scores');
 
 
@@ -593,10 +613,10 @@ SPEED_input.addEventListener("change", speedChange);
 SIZE_input.addEventListener("change", sizeChange);
 ACCELERATION_input.addEventListener("change", accelerationChange);
 RESET_SETT_input.addEventListener("click", function(){setTimeout(resetSettings)}, 15);
-HIGHSCORE_btn. addEventListener("click", function(){
+HIGHSCORE_btn.addEventListener("click", function(){
     gameWin('HIGHSCORES', 50, 'info');
 });
-NICKNAME_btn. addEventListener("click", function(){
+NICKNAME_btn.addEventListener("click", function(){
     localStorage.removeItem('user');
     checkUser();
 });
