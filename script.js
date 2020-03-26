@@ -218,7 +218,9 @@ function scoreCount(fRow, fCol) {
     setTimeout(function() {SCORE_EFFECT_span.remove();}, 1000);
 }
 function offClick(e){
-    if (e.target != PLAY_POOL && e.target.parentNode != PLAY_POOL){
+    let STORAGE_section = document.querySelector("#storage-section");
+    let INFORMATION_section = document.querySelector("#information-section");
+    if (e.target == STORAGE_section || e.target == INFORMATION_section || e.target == body){
         body.style.overflow = 'auto';
     } else {
         body.style.overflow = 'hidden';
