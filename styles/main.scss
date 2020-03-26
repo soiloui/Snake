@@ -113,6 +113,10 @@ body{
     &>:nth-child(n){
         margin-bottom: 5px;
     }
+    &--info{
+        margin-right: auto;
+        font-weight: bold;
+    }
     &--storage{
         background: transparent;
         border: 2px solid black;
@@ -121,6 +125,12 @@ body{
         outline: none;
         transition: all .2s ease-in;
 
+        &-reset{
+            border: 1px solid red;
+            color: red;
+            margin-top: 10px;
+        }
+
         &:hover{
             cursor: pointer;
             transform: scale(1.1);
@@ -128,9 +138,6 @@ body{
         &:active{
             transform: scale(1);
         }
-    }
-    &--info{
-        margin-right: auto;
     }
 }
 

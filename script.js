@@ -10,6 +10,8 @@ const ACCELERATION_input = document.querySelector('#acceleration');
 const RESET_SETT_input = document.querySelector('#reset_settings');
 const NICKNAME_btn = document.querySelector('#NICKNAME_btn');
 const HIGHSCORE_btn = document.querySelector('#HIGHSCORE_btn');
+const RESET_SCORES_btn = document.querySelector('#RESET-SCORES_btn');
+
 
 let rows_amount = getComputedStyle(PLAY_POOL)
     .getPropertyValue("grid-template-rows")
@@ -38,7 +40,6 @@ let prevDirection = "none";
 let bufforKey = "none";
 
 
-// localStorage.removeItem('scores');
 // localStorage.removeItem('user');
 let nickname = null;
 let prevNickname = JSON.parse(localStorage.getItem('user'));
@@ -495,6 +496,13 @@ function resetSettings() {
     sizeChange();
     breakGame();
 }
+function resetHighscores() {
+    let decision = window.confirm("Are you sure? This will cause remove all your scores!");
+    if (decision == true){
+        localStorage.removeItem('scores');
+        checkUser();
+    }
+}
 
 //GAME ACTIONS
 function pasueGame() {
@@ -622,3 +630,4 @@ NICKNAME_btn.addEventListener("click", function(){
     localStorage.removeItem('user');
     checkUser();
 });
+RESET_SCORES_btn.addEventListener("click", resetHighscores);

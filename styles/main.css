@@ -232,6 +232,11 @@ body {
   margin-bottom: 5px;
 }
 
+.storages--info {
+  margin-right: auto;
+  font-weight: bold;
+}
+
 .storages--storage {
   background: transparent;
   border: 2px solid black;
@@ -245,6 +250,12 @@ body {
   transition: all .2s ease-in;
 }
 
+.storages--storage-reset {
+  border: 1px solid red;
+  color: red;
+  margin-top: 10px;
+}
+
 .storages--storage:hover {
   cursor: pointer;
   -webkit-transform: scale(1.1);
@@ -254,10 +265,6 @@ body {
 .storages--storage:active {
   -webkit-transform: scale(1);
           transform: scale(1);
-}
-
-.storages--info {
-  margin-right: auto;
 }
 
 .settings {
