@@ -1,34 +1,41 @@
 @import url('https://fonts.googleapis.com/css?family=Baloo+Chettan+2|Roboto+Mono&display=swap');
 
-@mixin media-sm{
-    @media screen and (min-width: 50px){
-        @content;
-    }
+$color-one: #75ff81;
+$color-two: #c74875;
+$color-three: #7a1438;
+$color-four: #207a27;
+
+@mixin media-sm {
+	@media screen and (min-width: 50px) {
+		@content;
+	}
 }
-@mixin media-md{
-    @media screen and (min-width: 850px){
-        @content;
-    }
+@mixin media-md {
+	@media screen and (min-width: 850px) {
+		@content;
+	}
 }
-@mixin media-lg{
-    @media screen and (min-width: 1024px){
-        @content;
-    }
+@mixin media-lg {
+	@media screen and (min-width: 1024px) {
+		@content;
+	}
 }
-@mixin media-xl{
-    @media screen and (min-width: 1600px){
-        @content;
-    }
+@mixin media-xl {
+	@media screen and (min-width: 1600px) {
+		@content;
+	}
 }
 
-*, *::after, *::before{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 
-    font-family: 'Baloo Chettan 2', cursive;
+	font-family: 'Baloo Chettan 2', cursive;
 }
 
-ul{
-    list-style: none;
+ul {
+	list-style: none;
 }
